@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<meta name="description" content="Homelab Probe — read-only UniFi network diagnostics, discovery, inventory and troubleshooting from your terminal.">
+<title>Homelab Probe — Discover. Diagnose. Defend.</title>
+<style>
+:root{
+  --bg:#050b14;--bg2:#081423;--panel:#0b192a;--panel2:#0d2034;
+  --text:#f4f8fc;--muted:#91a6bc;--blue:#12a8ff;--cyan:#47d8ff;
+  --orange:#f46a2b;--line:rgba(86,190,255,.16);--green:#58e6a9;
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:
+ radial-gradient(900px 500px at 75% -10%,rgba(18,168,255,.16),transparent 60%),
+ radial-gradient(700px 500px at 0 40%,rgba(244,106,43,.07),transparent 65%),
+ var(--bg);color:var(--text);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}
+nav{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;height:68px}.brand img{display:block;width:auto;height:62px;max-width:260px;object-fit:contain}
+.mark{width:38px;height:38px;border:1px solid rgba(71,216,255,.45);border-radius:12px;background:linear-gradient(145deg,#123b63,#071421);display:grid;place-items:center;box-shadow:0 0 25px rgba(18,168,255,.16)}
+.mark svg{width:25px;height:25px}
+.brand span span{color:var(--blue)}
+.navlinks{display:flex;align-items:center;gap:28px;color:#b8c7d6;font-size:14px;font-weight:700}
+.navlinks a:hover{color:white}
+.ghbtn,.primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:10px;font-weight:800;transition:.2s ease}
+.ghbtn{padding:9px 14px;border:1px solid #2a4056;background:#0b1724}
+.ghbtn:hover{border-color:#4c6e8d;transform:translateY(-1px)}
+.hero{min-height:690px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:70px;padding:78px 0 85px}
+.eyebrow{display:inline-flex;gap:9px;align-items:center;color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+h1{font-size:clamp(52px,7vw,88px);line-height:.92;letter-spacing:-.065em;margin:0 0 25px;max-width:800px}
+h1 .probe{display:block;background:linear-gradient(90deg,#0d9fff,#55dcff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:20px;line-height:1.6;color:#a9bbcc;max-width:660px;margin:0 0 34px}
+.actions{display:flex;gap:13px;flex-wrap:wrap}
+.primary{padding:13px 20px;background:linear-gradient(135deg,#0799f4,#1cc4ff);color:#02101c;box-shadow:0 12px 35px rgba(18,168,255,.2)}
+.primary:hover{transform:translateY(-2px);box-shadow:0 16px 42px rgba(18,168,255,.3)}
+.secondary{padding:13px 20px;border:1px solid #2c435a;border-radius:10px;font-weight:800;color:#c9d7e4}
+.secondary:hover{background:#0d1b2a;border-color:#47637d}
+.safety{margin-top:26px;color:#758ca2;font-size:13px;display:flex;gap:9px;align-items:center}
+.safety b{color:#a9bfd2}
+.visual{position:relative;min-height:490px;display:grid;place-items:center}.official-visual{isolation:isolate}.official-logo{position:relative;z-index:2;width:min(100%,620px);height:auto;filter:drop-shadow(0 28px 38px rgba(0,0,0,.38));border-radius:18px}.logo-glow{position:absolute;z-index:1;width:82%;height:58%;border-radius:50%;background:radial-gradient(circle,rgba(18,168,255,.22),rgba(18,168,255,.05) 45%,transparent 72%);filter:blur(18px)}
+.orbit{position:absolute;border:1px solid rgba(40,183,255,.18);border-radius:50%}
+.o1{width:430px;height:430px}.o2{width:320px;height:320px;border-style:dashed;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.node{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 20px var(--blue)}
+.n1{top:16%;left:27%}.n2{top:28%;right:12%}.n3{bottom:20%;right:20%}.n4{bottom:13%;left:25%}
+.mascot{position:relative;width:285px;height:285px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#123f67 0,#0a1a2c 55%,#06101b 72%);border:1px solid rgba(66,191,255,.25);box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 0 70px rgba(17,155,240,.08)}
+.mascot svg{width:220px;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35))}
+.floatcard{position:absolute;padding:10px 14px;border:1px solid #193752;background:rgba(7,20,34,.88);backdrop-filter:blur(8px);border-radius:10px;color:#9eb6ca;font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.fc1{top:13%;right:0}.fc2{bottom:13%;left:0}.ok{color:var(--green)}
+.section{padding:100px 0}
+.section-head{max-width:720px;margin-bottom:48px}
+.kicker{color:var(--blue);font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+h2{font-size:clamp(34px,4.5vw,54px);line-height:1.05;letter-spacing:-.045em;margin:10px 0 16px}
+.section-head p{color:var(--muted);font-size:18px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{position:relative;padding:27px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,rgba(14,31,50,.82),rgba(7,18,31,.72));overflow:hidden;transition:.22s ease}
+.card:before{content:"";position:absolute;inset:0;background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),rgba(28,183,255,.11),transparent 45%);opacity:0;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:rgba(71,216,255,.35)}
+.card:hover:before{opacity:1}
+.icon{width:42px;height:42px;border-radius:10px;background:#0b2942;border:1px solid rgba(38,181,255,.25);display:grid;place-items:center;color:var(--cyan);font-size:20px;margin-bottom:20px}
+.card h3{margin:0 0 8px;font-size:18px}.card p{margin:0;color:#8fa5ba;font-size:14px}
+.terminal-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:65px;align-items:center}
+.terminal{border:1px solid #1b3852;border-radius:15px;background:#06101a;box-shadow:0 35px 80px rgba(0,0,0,.38);overflow:hidden}
+.tbar{height:43px;background:#0c1a28;border-bottom:1px solid #183047;display:flex;align-items:center;padding:0 15px;gap:7px}
+.tbar i{width:9px;height:9px;border-radius:50%;background:#29445c}.tbar i:first-child{background:#f06b43}.tbar i:nth-child(2){background:#e7b84b}.tbar i:nth-child(3){background:#55c98b}
+pre{margin:0;padding:25px;overflow:auto;color:#9fb5c7;font:13px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre .cmd{color:#fff}pre .blue{color:#4dcfff}pre .green{color:#63e6ac}pre .warn{color:#ffd166}
+.readonly{padding:95px 0;text-align:center}
+.shield{width:64px;height:64px;margin:0 auto 18px;border-radius:18px;background:linear-gradient(145deg,#0e385c,#071828);border:1px solid rgba(71,216,255,.3);display:grid;place-items:center;font-size:29px}
+.readonly p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px}
+.cta{margin:40px auto 95px;padding:60px;border:1px solid rgba(54,191,255,.25);border-radius:22px;background:radial-gradient(600px 250px at 50% 0,rgba(18,168,255,.13),transparent),#081523;text-align:center}
+.cta h2{margin-top:0}.cta p{color:var(--muted);margin:0 auto 25px;max-width:650px}
+footer{border-top:1px solid var(--line);padding:30px 0 45px;color:#667e94;font-size:13px}
+.footerrow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.disclaimer{max-width:720px}
+@media(max-width:850px){
+ .navlinks>a:not(.ghbtn){display:none}.hero{grid-template-columns:1fr;padding-top:55px}.visual{min-height:420px}.grid{grid-template-columns:1fr 1fr}.terminal-wrap{grid-template-columns:1fr}.terminal-wrap .section-head{margin-bottom:0}
+}
+@media(max-width:560px){.brand img{height:52px;max-width:205px}.wrap{width:min(100% - 26px,var(--max))}.grid{grid-template-columns:1fr}.visual{transform:scale(.82);margin:-40px}.cta{padding:38px 22px}h1{font-size:54px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="#" aria-label="Homelab Probe home"><img src="images/homelab-probe-text.png" alt="Homelab Probe"></a>
+  <div class="navlinks"><a href="#features">Features</a><a href="#terminal">CLI</a><a class="ghbtn" href="https://github.com/jeffholst/homelab-probe" target="_blank" rel="noopener">GitHub ↗</a></div>
+</nav>
+
+<main>
+<section class="hero">
+ <div>
+   <div class="eyebrow"><span class="dot"></span> Network intelligence for your homelab</div>
+   <h1>Discover.<br>Diagnose.<span class="probe">Defend.</span></h1>
+   <p class="lede">A read-only command-line toolkit for understanding, troubleshooting and inventorying your UniFi network — without changing your controller.</p>
+   <div class="actions">
+     <a class="primary" href="https://github.com/jeffholst/homelab-probe" target="_blank" rel="noopener">View on GitHub <span>↗</span></a>
+     <a class="secondary" href="#features">Explore features ↓</a>
+   </div>
+   <div class="safety">◈ <span><b>Read-only by design.</b> Built to investigate, not reconfigure.</span></div>
+ </div>
+
+ <div class="visual official-visual" aria-label="Homelab Probe official logo">
+   <div class="logo-glow"></div>
+  <img class="official-logo" src="images/homelab-probe.png" alt="Homelab Probe — ant mascot with shield and network probe">
+ </div>
+</section>
+
+<section class="section" id="features">
+ <div class="section-head"><span class="kicker">One toolkit. Clear answers.</span><h2>See what your network is actually doing.</h2><p>Homelab Probe turns controller data into practical views for inventory, troubleshooting and ongoing network health.</p></div>
+ <div class="grid">
+  <article class="card"><div class="icon">⌕</div><h3>Query & Inventory</h3><p>Explore devices, clients, networks, Wi‑Fi, switch ports and DHCP reservations. Export to tables, JSON or CSV.</p></article>
+  <article class="card"><div class="icon">⌁</div><h3>Topology</h3><p>Draw the uplink tree from your gateway down, including ports, link speeds, client counts and visible problems.</p></article>
+  <article class="card"><div class="icon">◉</div><h3>Client Troubleshooting</h3><p>Investigate a client by name, MAC or IP and see where it attaches, link quality and related findings.</p></article>
+  <article class="card"><div class="icon">≋</div><h3>Wi‑Fi & WAN</h3><p>Inspect AP radios, channel planning, neighboring networks, internet health, monitoring and speed-test history.</p></article>
+  <article class="card"><div class="icon">△</div><h3>Diagnose & Audit</h3><p>Surface critical, warning and informational findings plus risky settings such as open Wi‑Fi and firmware updates.</p></article>
+  <article class="card"><div class="icon">⇄</div><h3>Snapshots & Diffs</h3><p>Save local inventory snapshots and compare them later — or compare a snapshot directly against your live network.</p></article>
+ </div>
+</section>
+
+<section class="section" id="terminal">
+ <div class="terminal-wrap">
+  <div class="section-head"><span class="kicker">Built for the terminal or web</span><h2>Answers without the hunt.</h2><p>Focused commands help you move from “something's wrong” to useful evidence. Structured JSON output also makes Homelab Probe script-friendly.</p></div>
+  <div class="terminal">
+   <div class="tbar"><i></i><i></i><i></i></div>
+   <pre><span class="cmd">$ hlp diagnose</span>
+
+<span class="green">✓</span> Controller reachable
+<span class="green">✓</span> Gateway online
+<span class="warn">⚠</span>  2 devices require attention
+
+<span class="cmd">$ hlp topology</span>
+
+gateway
+├── switch-office  <span class="blue">1 Gbps</span>
+│   ├── ap-office
+│   └── workstation
+└── switch-lab     <span class="blue">2.5 Gbps</span>
+    ├── server
+    └── nas
+
+<span class="cmd">$ hlp client workstation</span>
+<span class="blue">↳</span> tracing client attachment &amp; health...</pre>
+  </div>
+ </div>
+</section>
+
+<section class="readonly">
+ <div class="shield">◇</div>
+ <span class="kicker">Safe by design</span>
+ <h2>Observe first. Change nothing.</h2>
+ <p>Homelab Probe is designed around read-only access to your UniFi controller. It gathers the information you need to understand problems without turning a diagnostic session into a configuration change.</p>
+</section>
+
+<section class="cta">
+ <span class="kicker">Open source</span>
+ <h2>Put your homelab under the microscope.</h2>
+ <p>Explore the source, documentation, roadmap and current development on GitHub.</p>
+ <a class="primary" href="https://github.com/jeffholst/homelab-probe" target="_blank" rel="noopener">Open Homelab Probe on GitHub ↗</a>
+</section>
+</main>
+
+<footer>
+ <div class="footerrow">
+  <div><b style="color:#9eb3c6">HOMELAB <span style="color:#12a8ff">PROBE</span></b><br>Discover · Diagnose · Defend</div>
+  <div class="disclaimer">Homelab Probe is an independent open-source project and is not affiliated with, sponsored by, or endorsed by Ubiquiti Inc. UniFi® is a trademark of Ubiquiti Inc.</div>
+ </div>
+</footer>
+</div>
+
+<script>
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    card.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    card.style.setProperty('--my',(e.clientY-r.top)+'px');
+  });
+});
+</script>
+</body>
+</html>
